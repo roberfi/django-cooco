@@ -4,18 +4,18 @@ from django import template
 from django.http import HttpRequest
 
 from django_cooco.models import BannerConfig, CookieGroup
-from django_cooco.utils import CookieConsentManager
+from django_cooco.utils import CooCoManager
 
 register = template.Library()
 
 
 @register.simple_tag
-def get_cookie_consent_manager(request: HttpRequest) -> CookieConsentManager:
-    return CookieConsentManager.from_request(request)
+def get_cooco_manager(request: HttpRequest) -> CooCoManager:
+    return CooCoManager.from_request(request)
 
 
 @register.simple_tag
-def get_cookie_consent_banner() -> BannerConfig:
+def get_cooco_banner_config() -> BannerConfig:
     return BannerConfig.get_solo()
 
 
@@ -25,16 +25,16 @@ def get_cookie_groups() -> Iterable[CookieGroup]:
 
 
 @register.filter
-def ask_for_cookie_consent(cookie_consent_manager: CookieConsentManager) -> bool:
-    return cookie_consent_manager.is_any_cookie_consent_outdated()
+def ask_for_cooco(cooco_manager: CooCoManager) -> bool:
+    return cooco_manager.is_cooco_outdated()
 
 
 @register.filter
-def is_cookie_group_accepted(cookie_consent_manager: CookieConsentManager, cookie_group: CookieGroup | None) -> bool:
+def is_cookie_group_accepted(cooco_manager: CooCoManager, cookie_group: CookieGroup | None) -> bool:
     if cookie_group is None:
         return False
 
-    return cookie_group.is_required or cookie_consent_manager.is_cookie_group_accepted(cookie_group.cookie_id)
+    return cookie_group.is_required or cooco_manager.is_cookie_group_accepted(cookie_group.cookie_id)
 
 
 @register.filter
