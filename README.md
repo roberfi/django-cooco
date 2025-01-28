@@ -141,3 +141,76 @@ Checks if any of the given cookies is optional. This could be useful if you have
     ...
 {% endif %}
 ```
+
+## Full example
+
+Here you can see an example of how the full functionality implementation could look like. Note that you would need "my_table_content" in the template context, which is a database entry that contains a ForeignKey field called "cookie_consent" to CookieGroup.
+
+```html
+{% load cooco %}
+
+{% get_cooco_manager request as cooco_manager %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Cooco Example</title>
+
+        {% if cooco_manager|is_cookie_group_accepted:my_table_content.cookie_consent %}
+            <script>
+                // Script that stores the cookies that the user has accepted
+            </script>
+        {% endif %}
+    </head>
+
+    <body>
+        <p>This is an example of Cooco usage</p>
+
+        {% if cooco_manager|ask_for_cooco %}
+            {% get_cooco_banner_config as banner %}
+            
+            {% if banner.show_banner %}
+                <div id="cooco_banner">
+                    <div>
+                        <h2>
+                            {{ banner.title }}
+                        </h2>
+                        <p>
+                            {{ banner.text }}
+                        </p>
+
+                        {% get_cookie_groups as cookie_groups %}
+                        
+                        {% if cookie_groups|any_optional_cookie_group %}
+                            <button onclick="showCookiesModal()">Settings</button>
+                            <dialog>
+                                {% for cookie_group in cookie_groups %}
+                                    <div>
+                                        <h1>
+                                            {{ cookie_group.name }}
+                                        </h1>
+                                        <p>
+                                            {{ cookie_group.description }}
+                                        </p>
+                                        <input name="{{ cookie_group.cookie_id }}"
+                                            type="checkbox"
+                                            checked="checked"
+                                            {% if cookie_group.is_required %}disabled{% endif %} />
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                <button type="submit">Save</button>
+                            </dialog> 
+                        {% endif %}
+                        
+                        <button>Accept</button>
+                    </div>
+                </div>
+            {% endif %}
+        
+        {% endif %}
+
+    </body>
+
+</html>
+```
