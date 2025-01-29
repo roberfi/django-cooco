@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "django-cooco"
-version = "0.0.1"
-description = "Django application to manage cookie consents"
+version = "v0.0.1"
+description = "Django app to manage cookie consents"
 authors = ["roberfi"]
 readme = "README.md"
 packages = [{ include = "django_cooco" }]
@@ -35,7 +35,7 @@ select = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-django = "^5.1.0"
+django = "^5.0.0"
 django-solo = "^2.4.0"
 
 [tool.poetry.group.dev]
