@@ -181,8 +181,41 @@ Checks if any of the given cookies is optional. This could be useful if you have
 {% endif %}
 ```
 
-## Full example
+## URLs
+#### `POST 'set_cookie_preferences'`
+Set cookie preferences.
 
+**Request fields:**
+| Field                              | Type  | Definition                            |
+| ---------------------------------- | ----- | ------------------------------------- |
+| `next`                             | `str` | Path to redirect when request is sent |
+| cookie_id* (additional properties) | `str` | "on" if accepted, otherwise rejected  |
+
+**Example:**
+```json
+{
+    "next": "/home",
+    "analytics": "on",
+    "ads": "off",
+}
+```
+
+#### `POST 'accept_all_cookies'`
+Accept all cookies.
+
+**Request fields:**
+| Field  | Type  | Definition                            |
+| ------ | ----- | ------------------------------------- |
+| `next` | `str` | Path to redirect when request is sent |
+
+**Example:**
+```json
+{
+    "next": "/home",
+}
+```
+
+## Full example
 Here you can see an example of how the full functionality implementation could look like. Note that `"analytics"` entry is present in the template context, which contains a database entry with a `ForeignKey` field to `CookieGroup` table called `"cookie_consent"` (see "Database Relationships" section of this document).
 
 ```html
@@ -223,26 +256,37 @@ Here you can see an example of how the full functionality implementation could l
                         {% if cookie_groups|any_optional_cookie_group %}
                             <button onclick="showCookiesModal()">Settings</button>
                             <dialog>
-                                {% for cookie_group in cookie_groups %}
-                                    <div>
-                                        <h1>
-                                            {{ cookie_group.name }}
-                                        </h1>
-                                        <p>
-                                            {{ cookie_group.description }}
-                                        </p>
-                                        <input name="{{ cookie_group.cookie_id }}"
-                                            type="checkbox"
-                                            checked="checked"
-                                            {% if cookie_group.is_required %}disabled{% endif %} />
+                                <form class="inline-block"
+                                    action="{% url 'set_cookie_preferences' %}"
+                                    method="post">
+                                    {% csrf_token %}
+                                    <input name="next" type="hidden" value="{{ request.path }}" />
+                                    {% for cookie_group in cookie_groups %}
+                                        <div>
+                                            <h1>
+                                                {{ cookie_group.name }}
+                                            </h1>
+                                            <p>
+                                                {{ cookie_group.description }}
+                                            </p>
+                                            <input name="{{ cookie_group.cookie_id }}"
+                                                type="checkbox"
+                                                checked="checked"
+                                                {% if cookie_group.is_required %}disabled{% endif %} />
                                         </div>
-                                    </div>
-                                {% endfor %}
-                                <button type="submit">Save</button>
+                                    {% endfor %}
+                                    <button type="submit">Save</button>
+                                </form>
                             </dialog> 
                         {% endif %}
                         
-                        <button>Accept</button>
+                        <form class="inline-block"
+                            action="{% url 'accept_all_cookies' %}"
+                            method="post">
+                            {% csrf_token %}
+                            <input name="next" type="hidden" value="{{ request.path }}">
+                            <button type="submit">Accept</button>
+                        </form>
                     </div>
                 </div>
             {% endif %}
