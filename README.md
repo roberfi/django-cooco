@@ -1,6 +1,6 @@
 # django-cooco
 
-django-cooco is a Django app to manage cookie consent in Django projects.
+django-cooco is a Django app to manage cookie consent in Django projects. This library was inspired by [django-cookie-consent](https://github.com/jazzband/django-cookie-consent), which I have taken as referece to create a simplier and more customizable solution.
 
 ## Quick start
 
