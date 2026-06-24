@@ -20,6 +20,11 @@ class AcceptAllCookies(SetCookiesBaseView):
         return self._set_cookie_and_redirect(request, CooCoManager.all_cookies_accepted())
 
 
+class RejectAllCookies(SetCookiesBaseView):
+    def post(self, request: HttpRequest) -> HttpResponseRedirect:
+        return self._set_cookie_and_redirect(request, CooCoManager.all_cookies_rejected())
+
+
 class SetCookiePreferences(SetCookiesBaseView):
     def post(self, request: HttpRequest) -> HttpResponseRedirect:
         return self._set_cookie_and_redirect(request, CooCoManager.parse_cooco_form(request.POST))

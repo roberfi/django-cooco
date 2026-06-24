@@ -26,10 +26,11 @@ django-cooco is a Django app to manage cookie consent in Django projects. This l
 ## Settings
 You can configure the following settings in your project `settings.py` file:
 
-| Setting                | Type  | Definition                                                      | Mandatory | Default value       |
-| ---------------------- | ----- | --------------------------------------------------------------- | --------- | ------------------- |
-| `COOCO_COOKIE_NAME`    | `str` | Name of the cookie to store the cookie consent status           | False     | `"cooco"`           |
-| `COOCO_COOKIE_MAX_AGE` | `int` | Max age of the cookie where the cookie consent status is stored | False     | `31536000` (1 year) |
+| Setting                 | Type   | Definition                                                      | Mandatory | Default value       |
+| ----------------------- | ------ | --------------------------------------------------------------- | --------- | ------------------- |
+| `COOCO_COOKIE_NAME`     | `str`  | Name of the cookie to store the cookie consent status           | False     | `"cooco"`           |
+| `COOCO_COOKIE_MAX_AGE`  | `int`  | Max age of the cookie where the cookie consent status is stored | False     | `31536000` (1 year) |
+| `COOCO_COOKIE_SECURE`   | `bool` | Whether to set the `Secure` flag on the consent cookie          | False     | `False`             |
 
 ## Database 
 ### Models
@@ -215,6 +216,21 @@ Accept all cookies.
 }
 ```
 
+#### `POST 'reject_all_cookies'`
+Reject all optional cookies.
+
+**Request fields:**
+| Field  | Type  | Definition                            |
+| ------ | ----- | ------------------------------------- |
+| `next` | `str` | Path to redirect when request is sent |
+
+**Example:**
+```json
+{
+    "next": "/home",
+}
+```
+
 ## Full example
 Here you can see an example of how the full functionality implementation could look like. Note that `"analytics"` entry is present in the template context, which contains a database entry with a `ForeignKey` field to `CookieGroup` table called `"cookie_consent"` (see "Database Relationships" section of this document).
 
@@ -286,6 +302,14 @@ Here you can see an example of how the full functionality implementation could l
                             {% csrf_token %}
                             <input name="next" type="hidden" value="{{ request.path }}">
                             <button type="submit">Accept</button>
+                        </form>
+
+                        <form class="inline-block"
+                            action="{% url 'reject_all_cookies' %}"
+                            method="post">
+                            {% csrf_token %}
+                            <input name="next" type="hidden" value="{{ request.path }}">
+                            <button type="submit">Reject all</button>
                         </form>
                     </div>
                 </div>

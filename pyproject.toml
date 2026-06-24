@@ -1,6 +1,6 @@
 [project]
 name = "django-cooco"
-version = "0.0.1"
+version = "0.1.0"
 description = "Django app to manage cookie consents"
 license = "MIT"
 readme = "README.md"
@@ -13,10 +13,12 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Framework :: Django",
     "Framework :: Django :: 5.0",
     "Framework :: Django :: 5.1",
     "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
     "Operating System :: Unix",
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",

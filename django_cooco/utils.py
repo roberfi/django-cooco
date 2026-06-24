@@ -34,6 +34,7 @@ class CooCo(NamedTuple):
 class CooCoManager:
     COOCO_COOKIE_NAME = getattr(settings, "COOCO_COOKIE_NAME", "cooco")
     COOCO_COOKIE_MAX_AGE = getattr(settings, "COOCO_COOKIE_MAX_AGE", 60 * 60 * 24 * 365 * 1)
+    COOCO_COOKIE_SECURE = getattr(settings, "COOCO_COOKIE_SECURE", False)
     DEFAULT_COOCO_STATUS = CooCoStatus(0, False)
 
     def __init__(self, cooco: Iterable[CooCo] | None) -> None:
@@ -115,12 +116,27 @@ class CooCoManager:
             )
         )
 
+    @classmethod
+    def all_cookies_rejected(cls) -> Self:
+        return cls(
+            (
+                CooCo(
+                    cookie_id=cookie_group.cookie_id,
+                    current_version=cookie_group.version,
+                    cooco_status=CooCoStatus(cookie_group.version, False),
+                )
+                for cookie_group in cls.__get_optional_cookie_groups()
+            )
+        )
+
     def set_cooco_cookie(self, response: THttpResponse) -> THttpResponse:
         response.set_cookie(
             self.COOCO_COOKIE_NAME,
             json.dumps({cooco.cookie_id: cooco.cooco_status for cooco in self.__coocos}),
             max_age=self.COOCO_COOKIE_MAX_AGE,
             samesite="Lax",
+            httponly=True,
+            secure=self.COOCO_COOKIE_SECURE,
         )
 
         return response
